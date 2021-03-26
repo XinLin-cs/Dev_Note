@@ -1,7 +1,10 @@
 from sklearn import datasets
+from sklearn import metrics
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import math
+
 
 class MED(object):
     #初始化
@@ -9,6 +12,7 @@ class MED(object):
         self.vlen = 0 
         self.cnt = 0 #统计向量个数
         self.center_coordinates = {} #计算向量之和并最后求均值
+        self.score = []
 
     #向量距离
     def __distance(self, x, y):
@@ -18,6 +22,25 @@ class MED(object):
         for i in range(0,self.vlen):
             tot += (x[i]-y[i])*(x[i]-y[i])
         return math.sqrt(tot)
+
+    #留出法
+    def div(self, data):
+        #生成训练集
+        Iris_linear_train = pd.DataFrame(Iris_linear.iloc[0:int(len(Iris_linear)*0.7)])
+        #print(Iris_linear_train)
+        X_train = Iris_linear_train[[0, 1, 2]]
+        Y_train = Iris_linear_train['target']
+        #print(X_train)
+        #print(Y_train)
+
+        #生成测试集
+        Iris_linear_test = Iris_linear.iloc[int(len(Iris_linear)*0.7):len(Iris_linear)].reset_index(drop=True)
+        #print(Iris_linear_test)
+        X_test = Iris_linear_test[[0, 1, 2]]
+        Y_test = Iris_linear_test['target']
+        #print(X_test)
+        #print(Y_test)
+        return X_train , Y_train , X_test , Y_test
 
     #训练
     def fit(self, X_train, Y_train):
@@ -35,49 +58,35 @@ class MED(object):
         for i in self.center_coordinates:
             self.center_coordinates[i]=self.center_coordinates[i]/self.cnt
     
-    #寻找最近聚类
-    def __closedCenter(self, x):
-        mindis = 1e18
-        for i in self.center_coordinates:
-            if self.__distance(x,self.center_coordinates[i]) < mindis:
-                mindis = self.__distance(x,self.center_coordinates[i])
-                res=i
-        return res
-
-    #预测
-    def predict(self, X_test):
-        Y_predict = []
+    #打分
+    def __score(self, X_test):
+        self.Y_score = []
         for i in X_test.index:
             x = X_test.iloc[i]
-            Y_predict.append(self.__closedCenter(x))
-        self.Y_predict = pd.DataFrame(Y_predict)
-        return self.Y_predict
+            total = 0
+            for j in self.center_coordinates:
+                total += 1/self.__distance(x, self.center_coordinates[j])
+            score = 1/self.__distance(x, self.center_coordinates[1]) / total
+            self.Y_score.append(score)
+        return self.Y_score
 
     #评估
-    def evaluate(self, Y_test):
-        TP , FP , TN, FN = 0, 0, 0, 0
-        for i in Y_test.index:
-            if self.Y_predict[0][i]!=0: 
-                if Y_test[i]!=0:
-                    TP+=1
-                else:
-                    FP+=1
-            else:
-                if Y_test[i]!=0:
-                    FN+=1
-                else:
-                    TN+=1
-        Accuracy = (TP+TN)/(TP+TN+FP+FN)
-        Precision = TP/(TP+FP)
-        Recall = TP/(TP+FN)
-        F1_Score = 2*Recall*Precision
-        print("Accuracy: %f" % Accuracy)
-        print("Precision: %f" % Precision)
-        print("Recall: %f" % Recall)
-        print("F1_Score: %f" % F1_Score)
-        
-        plt.scatter(X_test, Y_test, c='red', label='test')
+    def evaluate(self, X_test, Y_test):
+        Y_score = self.__score(X_test)
+    
+        # PR
+        y_true = np.array(Y_test)
+        y_scores = np.array(Y_score)
+        precision, recall, thresholds = metrics.precision_recall_curve(y_true, y_scores)
+
+        plt.title('Precision/Recall Curve')# give plot a title
+        plt.xlabel('Recall')# make axis labels
+        plt.ylabel('Precision')
+        plt.plot(recall,precision)
         plt.show()
+
+        Precision = metrics.average_precision_score(Y_test, self.Y_score)
+        print("Precision: %f" % Precision)
     
 if __name__ == '__main__':
     #加载数据集，是一个字典类似Java中的map
@@ -91,25 +100,7 @@ if __name__ == '__main__':
     Iris_linear = Iris_linear.sample(frac=1).reset_index(drop=True)#随机打乱
     #print(Iris_linear)
 
-    #生成训练集
-    Iris_linear_train = pd.DataFrame(Iris_linear.iloc[0:int(len(Iris_linear)*0.7)])
-    #print(Iris_linear_train)
-    X_train = Iris_linear_train[[0, 1, 2]]
-    Y_train = Iris_linear_train['target']
-    #print(X_train)
-    #print(Y_train)
-
-    #生成测试集
-    Iris_linear_test = Iris_linear.iloc[int(len(Iris_linear)*0.7):len(Iris_linear)].reset_index(drop=True)
-    #print(Iris_linear_test)
-    X_test = Iris_linear_test[[0, 1, 2]]
-    Y_test = Iris_linear_test['target']
-    #print(X_test)
-    #print(Y_test)
-
-
     med = MED()
+    X_train  , Y_train, X_test , Y_test = med.div(Iris_linear)
     med.fit(X_train, Y_train)
-    med.predict(X_test)
-    #print(med.Y_predict)
-    med.evaluate(Y_test)
+    med.evaluate(X_test, Y_test)

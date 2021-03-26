@@ -32,4 +32,3 @@ for i in range(0,3):
             plt.legend()
 
 plt.show()
-plt.savefig('/Figure_1.png')
