@@ -16,17 +16,19 @@ Iris数据集（鸢尾花数据集）是常用的分类实验数据集，由Fish
 
 \1. Iris数据集已与常见的机器学习工具集成，请查阅资料找出MATLAB平台或Python平台加载内置Iris数据集方法，并简要描述该数据集结构。
 
-> {'data': array([[5.1, 3.5, 1.4, 0.2],
->     [4.9, 3. , 1.4, 0.2],
->     [4.7, 3.2, 1.3, 0.2]，
->     ···
-> 'target': array([0, 0, 0, 0, ···
-> 'frame': None, 
-> 'target_names' ···}
->
+```
+{'data': array([[5.1, 3.5, 1.4, 0.2],
+               [4.9, 3. , 1.4, 0.2],
+               [4.7, 3.2, 1.3, 0.2]，
+ 'target': array([0, 0, 0, 0, ···
+ 'frame': None, 
+ 'target_names' ···}
+```
 > 数据集是一个map，其中data中含有150个数据，每个数据有四个属性值；target中为data中数据对应的分类，有0-2共三种；target_names中为分类值所对应的花名
 
 \2. Iris数据集中有一个种类与另外两个类是线性可分的，其余两个类是线性不可分的。请你通过数据可视化的方法找出该线性可分类并给出判断依据。
+
+Iris.py
 
 ```python
 from sklearn import datasets
@@ -64,17 +66,12 @@ for i in range(0,3):
 
 plt.show()
 ```
+![](Figure_1.png)
 
-
-
-
-> ![](Figure_1.png)
->
 > 0是线性可分的，可以通过一个线性函数将其与另外两个类分开
 
-
-
 \3.去除Iris数据集中线性不可分的类中最后一个，余下的两个线性可分的类构成的数据集命令为Iris_linear，请使用留出法将Iris_linear数据集按7:3分为训练集与测试集，并使用训练集训练一个MED分类器，在测试集上测试训练好的分类器的性能，给出《模式识别与机器学习-评估方法与性能指标》中所有量化指标并可视化分类结果。
+MED.py
 
 ```python
 from sklearn import datasets
@@ -251,6 +248,7 @@ class MED(object):
         #保存并显示
         plt.show()
 ```
+Iris_linear.py
 ```python
 from sklearn import datasets
 import matplotlib.pyplot as plt
@@ -276,8 +274,17 @@ if __name__ == '__main__':
     med.fit(X_train, Y_train)
     med.evaluate(X_test, Y_test)
 ```
-> ![](Figure_2.png)
->
+输出结果
+```
+Accuracy:  1.0
+Precision:  1.0
+Recall:  1.0
+Specificity:  1.0
+F1score:  1.0
+```
+
+![](Figure_2.png)
+
 > PS：因为x和y最小单位不同，所以视觉上的分界线并不垂直
 
 \4. 将Iris数据集白化，可视化白化结果并于原始可视化结果比较，讨论白化的作用。
@@ -288,6 +295,7 @@ if __name__ == '__main__':
 
 \5. 去除Iris数据集中线性可分的类，余下的两个线性不可分的类构成的数据集命令为Iris_nonlinear，请使用留出法将Iris_nonlinear数据集按7:3分为训练集与测试集，并使用训练集训练一个MED分类器，在测试集上测试训练好的分类器的性能，给出《模式识别与机器学习-评估方法与性能指标》中所有量化指标并可视化分类结果。讨论本题结果与3题结果的差异。
 
+Iris_nolinear.py
 ```python
 from sklearn import datasets
 import pandas as pd
@@ -312,9 +320,18 @@ if __name__ == '__main__':
     med.fit(X_train, Y_train)
     med.evaluate(X_test, Y_test)
 ```
-> ![](Figure_3.png)
->
-> 存在较多被误判的数据（FP，FN），PR曲线向左下移动，ROC曲线向右下移动
+输出结果
+```
+Accuracy:  0.7999999999999999
+Precision:  0.9166666666666666
+Recall:  0.6875
+Specificity:  0.9285714285714287
+F1score:  0.7857142857142857
+```
+
+![](Figure_3.png)
+
+> 存在较多被误判的数据，准确度精度召回率特异度F1score均有所下降，其中召回率下降最多，PR曲线向左下移动，ROC曲线向右下移动
 
 \6. 请使用5折交叉验证为Iris数据集训练一个多分类的贝叶斯分类器。给出平均Accuracy，并可视化实验结果。与第3题和第5题结果做比较，讨论贝叶斯分类器的优劣。
 

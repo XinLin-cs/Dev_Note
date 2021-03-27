@@ -10,7 +10,7 @@ class MED(object):
         self.vecotr_length = 0 
         self.center_coordinates = {} #计算向量之和并最后求均值
         self.point_number = {} #统计向量个数
-        self.score = []
+        #self.score = []
 
     #向量距离
     def __distance(self, x, y):
@@ -21,10 +21,10 @@ class MED(object):
             tot += (x[i]-y[i])*(x[i]-y[i])
         return math.sqrt(tot)
 
-    #留出法
-    def div(self, data):
+    #分割数据集
+    def split(self, data, rate):
         #生成训练集
-        Iris_linear_train = data.iloc[0:int(len(data)*0.7)]
+        Iris_linear_train = data.iloc[0:int(len(data)*rate)]
         #print(Iris_linear_train)
         X_train = Iris_linear_train[[0, 1, 2]]
         Y_train = Iris_linear_train['target']
@@ -32,7 +32,7 @@ class MED(object):
         #print(Y_train)
 
         #生成测试集
-        Iris_linear_test = data.iloc[int(len(data)*0.7):len(data)].reset_index(drop=True)
+        Iris_linear_test = data.iloc[int(len(data)*rate):len(data)].reset_index(drop=True)
         #print(Iris_linear_test)
         X_test = Iris_linear_test[[0, 1, 2]]
         Y_test = Iris_linear_test['target']
@@ -42,6 +42,7 @@ class MED(object):
 
     #训练
     def fit(self, X_train, Y_train):
+        self.__init__()
         self.vecotr_length = len(X_train.columns)
         #计算向量之和
         for i in X_train.index:
@@ -59,33 +60,33 @@ class MED(object):
     
     #打分
     def __score(self, X_test):
-        self.Y_score = []
+        Y_score = []
         for i in X_test.index:
             x = X_test.iloc[i]
             total = 0
             for j in self.center_coordinates:
                 total += 1/self.__distance(x, self.center_coordinates[j])
             score = 1/self.__distance(x, self.center_coordinates[1]) / total
-            self.Y_score.append(score)
-        return self.Y_score
+            Y_score.append(score)
+        return Y_score
 
     def __TFNP(self, Y_scores, Y_test, thresholds):
         TP , FP , TN , FN = 0 , 0 , 0 , 0
         for i in range(0,len(Y_scores)):
-            if Y_scores[i] >= thresholds:
+            if Y_scores[i] > thresholds:
                 if  Y_test[i] == 1:
                     TP += 1
                 else:
                     FP += 1
-            else:
+            elif Y_scores[i] < thresholds:
                 if  Y_test[i] == 1:
                     FN += 1
                 else:
                     TN += 1
         return TP , FP , TN , FN
 
-    #评估
-    def evaluate(self, X_test, Y_test):
+    #可视化评估
+    def __evaluate(self, X_test, Y_test):
         Y_score = self.__score(X_test)
 
         #数据集预处理
@@ -135,8 +136,7 @@ class MED(object):
                 #添加图例
                 plt.legend()
 
-        # 评估值计算
-        eps = 1e-18
+        # 曲线度量
         precision = []
         recall = []
         FPR = []
@@ -144,8 +144,11 @@ class MED(object):
         area = []
         for thresholds in range(0,1000):
             TP , FP , TN , FN = self.__TFNP(Y_score, Y_test, thresholds/1000)
-            precision.append(TP / (TP + FP + eps))
-            recall.append(TP / (TP + FN + eps))
+            if TP + FP != 0 :
+                precision.append(TP / (TP + FP))
+            else:
+                precision.append(1)
+            recall.append(TP / (TP + FN))
             FPR.append(FP / (FP + TN))
             area_sum += FP / (FP + TN)
             area.append(area_sum)
@@ -170,3 +173,38 @@ class MED(object):
 
         #保存并显示
         plt.show()
+    
+    #留出法
+    def Holdout(self, data, rate, n):
+        accuracy = []
+        precision = []
+        recall = []
+        specificity = []
+        f1score = []
+
+        for i in range(0,n):
+            X_train  , Y_train, X_test , Y_test = self.split(data, rate)
+            self.fit(X_train, Y_train)
+            Y_score = self.__score(X_test)
+            TP , FP , TN , FN = self.__TFNP(Y_score, Y_test, 0.5)
+            accuracy.append((TP + TN) / (TP + TN + FP + FN))
+            precision.append(TP / (TP + FP))
+            recall.append(TP / (TP + FN))
+            specificity.append(TN / (TN + FP))
+            f1score.append(2*recall[i]*precision[i]/(recall[i]+precision[i]))
+
+        Accuracy = np.mean(accuracy)
+        Precision = np.mean(precision)
+        Recall = np.mean(recall)
+        Specificity = np.mean(specificity)
+        F1score = np.mean(f1score)
+
+        print('Accuracy: ', Accuracy)
+        print('Precision: ', Precision)
+        print('Recall: ', Recall)
+        print('Specificity: ', Specificity)
+        print('F1score: ', F1score)
+
+        #利用残留数据进行曲线度量
+        self.__evaluate(X_test , Y_test)
+

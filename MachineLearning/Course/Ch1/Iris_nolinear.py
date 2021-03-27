@@ -11,12 +11,10 @@ if __name__ == '__main__':
     Iris_df.insert(0,'target',Iris.target)
 
     #构造新数据集
-    Iris_linear = Iris_df[Iris_df['target']!=0] #删除0类
-    Iris_linear['target']-=1 # 1->0 && 2->1 
-    Iris_linear = Iris_linear.sample(frac=1).reset_index(drop=True)#随机打乱
+    Iris_nolinear = Iris_df[Iris_df['target']!=0] #删除0类
+    Iris_nolinear['target']-=1 # 1->0 && 2->1 
+    Iris_nolinear = Iris_nolinear.sample(frac=1).reset_index(drop=True)#随机打乱
     #print(Iris_linear)
 
     med = MED()
-    X_train  , Y_train, X_test , Y_test = med.div(Iris_linear)
-    med.fit(X_train, Y_train)
-    med.evaluate(X_test, Y_test)
+    med.Holdout(Iris_nolinear, 0.7, 300)

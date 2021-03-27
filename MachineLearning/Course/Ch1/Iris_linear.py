@@ -16,6 +16,4 @@ if __name__ == '__main__':
     #print(Iris_linear)
 
     med = MED()
-    X_train  , Y_train, X_test , Y_test = med.div(Iris_linear)
-    med.fit(X_train, Y_train)
-    med.evaluate(X_test, Y_test)
+    med.Holdout(Iris_linear, 0.7, 300)
