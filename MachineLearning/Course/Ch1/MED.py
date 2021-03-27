@@ -26,7 +26,7 @@ class MED(object):
         #生成训练集
         Iris_linear_train = data.iloc[0:int(len(data)*rate)]
         #print(Iris_linear_train)
-        X_train = Iris_linear_train[[0, 1, 2]]
+        X_train = Iris_linear_train[[0, 1, 2, 3]]
         Y_train = Iris_linear_train['target']
         #print(X_train)
         #print(Y_train)
@@ -34,7 +34,7 @@ class MED(object):
         #生成测试集
         Iris_linear_test = data.iloc[int(len(data)*rate):len(data)].reset_index(drop=True)
         #print(Iris_linear_test)
-        X_test = Iris_linear_test[[0, 1, 2]]
+        X_test = Iris_linear_test[[0, 1, 2, 3]]
         Y_test = Iris_linear_test['target']
         #print(X_test)
         #print(Y_test)
@@ -96,11 +96,14 @@ class MED(object):
         Iris_div = []
         for i in range(0,2):
             Iris_div.append(Iris_df[Iris_df['target']==i])
+        
         #颜色表
         colmaps = ['green', 'blue']
-        for i in range(0,3):
-            for j in range(0,3):
-                plt.subplot(4,3,3*i+j+1)
+        fig_id = 0
+        for i in range(0,4):
+            for j in range(i+1,4):
+                fig_id += 1
+                plt.subplot(3,3,fig_id)
                 for k in range(0,2):
                     #挑选出ij两个维度作为x轴和y轴，k作为目标种类
                     x_axis = Iris_div[k][i]
@@ -153,19 +156,19 @@ class MED(object):
             area_sum += FP / (FP + TN)
             area.append(area_sum)
         # PR
-        plt.subplot(4,3,10)
+        plt.subplot(3,3,7)
         plt.title('PR Curve')
         plt.xlabel('Recall')
         plt.ylabel('Precision')
         plt.plot(recall,precision)
         # ROC
-        plt.subplot(4,3,11)
+        plt.subplot(3,3,8)
         plt.title('ROC Curve')
         plt.xlabel('FPR')
         plt.ylabel('Recall')
         plt.plot(FPR,recall)
         # AUC
-        plt.subplot(4,3,12)
+        plt.subplot(3,3,9)
         plt.title('AUC Curve')
         plt.xlabel('area')
         plt.ylabel('Recall')
