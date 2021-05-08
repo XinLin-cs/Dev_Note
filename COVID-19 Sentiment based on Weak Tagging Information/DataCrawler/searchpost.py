@@ -31,6 +31,17 @@ post_dict = {
     'i_f30':0,
 }
 
+# 数据清洗
+def clear_data(text):
+    try:
+        text = re.sub('[\n\r ]', '', text)
+        text = re.sub('[,]', '，', text)
+        return text
+    except BaseException as e:
+        # print("ERROR: When request" , url , "WITH:", e)
+        return text
+    
+
 # 访问url 返回数据元组
 def get_pids(url):
     try:
@@ -62,21 +73,22 @@ def get_pdata(url):
         commends = soup.find_all('div',attrs={'class':'d_post_content j_d_post_content clearfix'})
         for commend in commends:
             # 选取含文本评论
-            if text is not None:
-                # 初始化
-                dict = post_dict.copy()
-                # 文本
-                text = commend.text
-                dict['text'] = text
-                # 统计表情
-                for child in commend.children:
-                    if child.name=='img':
-                        imgid_list = img_pattern.findall(child['src'])
-                        for imgid in imgid_list:
-                            if dict[imgid] is not None:
-                                dict[imgid]+=1
-                dataform.append(dict)
-                # print(dict)
+            # 文本
+            text = clear_data(commend.text)
+            if text is None or text =='':
+                continue
+            # 初始化
+            dict = post_dict.copy()
+            dict['text'] = text
+            # 统计表情
+            for child in commend.children:
+                if child.name=='img':
+                    imgid_list = img_pattern.findall(child['src'])
+                    for imgid in imgid_list:
+                        if dict[imgid] is not None:
+                            dict[imgid]+=1
+            dataform.append(dict)
+            # print(dict)
         
         # # 楼内回复内容
         # replies = soup.find_all('span',attrs={'class':'lzl_content_main'})

@@ -26,3 +26,4 @@ for r in dataform.index:
 data_good.to_csv('data_good.csv', index_label = index_label , encoding="utf_8_sig", sep=spliter)
 data_bad.to_csv('data_bad.csv', index_label = index_label , encoding="utf_8_sig", sep=spliter)
 
+print('[select finish]')
