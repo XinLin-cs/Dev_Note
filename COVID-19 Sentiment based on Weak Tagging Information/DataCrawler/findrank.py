@@ -1,4 +1,4 @@
-import requests
+
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
@@ -7,6 +7,7 @@ import _thread
 import time
 import urllib
 import string
+import urllib.request
 
 #导出路径
 fileaddress = 'rank.csv'
@@ -110,11 +111,12 @@ def work_by_linear(kw, start_id, terminal_id):
 
 if __name__ == '__main__':
     # start_id, terminal_id = 660000, 660010
-    start_id, terminal_id = 1, 7
+    start_id, terminal_id = 1, 17
     itemlist = work_by_linear('新型冠状病毒', start_id , terminal_id )
     with open("data.txt","w") as f:
         for key in post_dict:
-            print('%s: %d' % (key , post_dict[key]))
-            f.write('%s: %d\n' % (key , post_dict[key]))
+            if (post_dict[key]!=0):
+                print('%s: %d' % (key , post_dict[key]))
+                f.write('%s: %d\n' % (key , post_dict[key]))
         print('total: %d' % total)
         f.write('total: %d\n' % total)

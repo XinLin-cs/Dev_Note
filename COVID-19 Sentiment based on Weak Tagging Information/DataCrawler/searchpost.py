@@ -15,11 +15,19 @@ header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 
 #表情url正则式
 img_pattern = re.compile(r'i_f\d\d')
 #初始数据字典
-post_dict = {}
-post_dict['text'] = ' '
-for i in range(1,34):
-    name = 'i_f%02d' % (i)
-    post_dict[name] = 0; 
+post_dict = {
+    'text':0,
+    'i_f25':0,
+    'i_f16':0,
+    'i_f05':0,
+    'i_f01':0,
+    'i_f02':0,
+    'i_f04':0,
+    'i_f15':0,
+    'i_f27':0,
+    'i_f28':0,
+    'i_f30':0,
+}
 
 # 访问url 返回数据元组
 def get_pids(url):
@@ -62,7 +70,8 @@ def get_pdata(url):
                 if child.name=='img':
                     imgid_list = img_pattern.findall(child['src'])
                     for imgid in imgid_list:
-                        dict[imgid]+=1
+                        if dict[imgid] is not None:
+                            dict[imgid]+=1
             dataform.append(dict)
             # print(dict)
         
@@ -90,7 +99,7 @@ def save_as_csv(data):
                 data_df[key] = []
             data_df[key].append(it[key])
     data_df = pd.DataFrame(data_df)
-    data_df.to_csv(fileaddress, encoding="utf_8_sig", sep='	')
+    data_df.to_csv(fileaddress, encoding="utf_8_sig", sep=' ')
 
 
 # 线性访问
