@@ -8,8 +8,10 @@ import time
 import urllib
 import string
 
-#导出路径
+#导出配置
+index_label = 'id'
 fileaddress = 'data.csv'
+spliter = ','
 #伪装头
 header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.22 Safari/537.36 SE 2.X MetaSr 1.0'}
 #表情url正则式
@@ -59,21 +61,22 @@ def get_pdata(url):
         # 楼中内容
         commends = soup.find_all('div',attrs={'class':'d_post_content j_d_post_content clearfix'})
         for commend in commends:
-            # 初始化
-            dict = post_dict.copy()
-            # 文本
-            text = commend.text
+            # 选取含文本评论
             if text is not None:
+                # 初始化
+                dict = post_dict.copy()
+                # 文本
+                text = commend.text
                 dict['text'] = text
-            # 统计表情
-            for child in commend.children:
-                if child.name=='img':
-                    imgid_list = img_pattern.findall(child['src'])
-                    for imgid in imgid_list:
-                        if dict[imgid] is not None:
-                            dict[imgid]+=1
-            dataform.append(dict)
-            # print(dict)
+                # 统计表情
+                for child in commend.children:
+                    if child.name=='img':
+                        imgid_list = img_pattern.findall(child['src'])
+                        for imgid in imgid_list:
+                            if dict[imgid] is not None:
+                                dict[imgid]+=1
+                dataform.append(dict)
+                # print(dict)
         
         # # 楼内回复内容
         # replies = soup.find_all('span',attrs={'class':'lzl_content_main'})
@@ -88,18 +91,6 @@ def get_pdata(url):
     except BaseException as e:
         # print("ERROR: When request" , url , "WITH:", e)
         return None
-
-
-# 参数为数据表，保存为csv文件
-def save_as_csv(data):
-    data_df = {}
-    for it in data:
-        for key in it:
-            if data_df.get(key) is None:
-                data_df[key] = []
-            data_df[key].append(it[key])
-    data_df = pd.DataFrame(data_df)
-    data_df.to_csv(fileaddress, encoding="utf_8_sig", sep=' ')
 
 
 # 线性访问
@@ -126,13 +117,26 @@ def work_by_linear(kw, start_id, terminal_id):
         url = "https://tieba.baidu.com/p/%s" % (pid)
         # print(url)
         pdata = get_pdata(url)
-        for pitem in pdata:
-            dataform.append(pitem)
-        # print(pitem)
+        if pdata is not None:
+            for pitem in pdata:
+                dataform.append(pitem)
+            
         # 日志显示进度
         rate = 100.0 * (i+1) / (len(pidlist))
         print("[searching posts] %.1f" % rate, "%")
     return dataform
+
+
+# 参数为数据表，保存为csv文件
+def save_as_csv(data):
+    data_df = {}
+    for it in data:
+        for key in it:
+            if data_df.get(key) is None:
+                data_df[key] = []
+            data_df[key].append(it[key])
+    data_df = pd.DataFrame(data_df)
+    data_df.to_csv(fileaddress, index_label = index_label , encoding="utf_8_sig", sep=spliter)
 
 
 if __name__ == '__main__':
