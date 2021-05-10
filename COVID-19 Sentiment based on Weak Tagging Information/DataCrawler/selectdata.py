@@ -9,6 +9,7 @@ dataform = pd.read_csv(fileaddress, encoding="utf_8_sig", sep=spliter, index_col
 data_good = pd.DataFrame(columns = dataform.columns)
 data_bad = pd.DataFrame(columns = dataform.columns)
 
+print('[selecting...]')
 for r in dataform.index:
     flag = 0
     for c in dataform: 
@@ -23,6 +24,7 @@ for r in dataform.index:
     else:
         data_bad = data_bad.append(dataform.iloc[r])
 
+print('[saving...]')
 data_good.to_csv('data_good.csv', index_label = index_label , encoding="utf_8_sig", sep=spliter)
 data_bad.to_csv('data_bad.csv', index_label = index_label , encoding="utf_8_sig", sep=spliter)
 
