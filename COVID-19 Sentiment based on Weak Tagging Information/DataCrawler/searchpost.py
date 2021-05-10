@@ -153,7 +153,7 @@ def save_as_csv(data):
 
 if __name__ == '__main__':
     # start_id, terminal_id = 660000, 660010
-    start_id, terminal_id = 1, 2
+    start_id, terminal_id = 1, 30
     itemlist = work_by_linear('新型冠状病毒', start_id , terminal_id )
     # print(itemlist)
     save_as_csv(itemlist)
