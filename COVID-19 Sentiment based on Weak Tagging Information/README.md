@@ -22,3 +22,7 @@ https://github.com/jiejieliu/imdb_BiLSTM/blob/master/imdb_BiLSTM.ipynb
 外国数据集网站
 
 https://www.kaggle.com/snap/amazon-fine-food-reviews
+
+gensim.models Word2Vec参数说明
+
+https://blog.csdn.net/wen_fei/article/details/82556835
