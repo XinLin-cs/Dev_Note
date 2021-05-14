@@ -19,7 +19,7 @@ def doc_vec():
        #key_words_importance = eval(f.read())
     
     #数据集处理
-    data_y = np.array(data['得分'].apply(lambda x:int(x)))
+    data_y = np.array(data['得分'].apply(lambda x:((float(x)-1)/4)))
     text_list = np.array(data['评论内容'].apply(lambda x:cut_sentence_cn(x)))
 
     #训练集转换为向量
@@ -33,8 +33,6 @@ def doc_vec():
             if x<0:
                 x *= 0.5
                 x += 1
-    for y in np.nditer(data_y, op_flags=['readwrite']): 
-        y= int(y/3)
     return data_x,data_y
 
 if __name__ == '__main__':
