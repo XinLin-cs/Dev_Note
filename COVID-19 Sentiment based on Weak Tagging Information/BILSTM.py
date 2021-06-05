@@ -34,12 +34,23 @@ train_y = np.array(train_y)
 test_y = np.array(test_y)
 
 
+
+
+
+
+
+
+
 # 创建网络结构
 model=Sequential()
 model.add(Embedding(max_features,100,input_length=maxlen))
-model.add(Bidirectional(LSTM(64)))
+model.add(Bidirectional(LSTM(64,return_sequences=True)))
+model.add(Bidirectional(LSTM(64,return_sequences=False)))
+
 model.add(Dropout(0.5))
 model.add(Dense(1,activation='sigmoid'))
+
+
 # 编译模型
 model.compile('adam','binary_crossentropy',metrics=['accuracy'])
 # 训练模型
