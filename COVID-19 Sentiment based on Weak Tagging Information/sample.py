@@ -35,7 +35,7 @@ print(y_train)
 
 # 创建网络结构
 model=Sequential()
-model.add(Embedding(max_features,300,input_length=maxlen))
+model.add(Embedding(max_features,50,input_length=maxlen))
 model.add(Bidirectional(LSTM(64)))
 model.add(Dropout(0.5))
 model.add(Dense(1,activation='sigmoid'))
