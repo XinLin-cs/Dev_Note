@@ -21,8 +21,10 @@ def doc_vec(file_address, target_name):
     data = data.dropna()
     data[target_name] = data[target_name].apply(lambda x:int(((float(x))/3)))
     data[col_comment] = data[col_comment].apply(lambda x:cut_sentence_cn(x))
+    
     data = data.dropna()
-    # data = data [data[target_name]!=3]
+    data = data [data[target_name]!=3]
+    
     data_y = np.array(data[target_name])
     text_list = np.array(data[col_comment])
     

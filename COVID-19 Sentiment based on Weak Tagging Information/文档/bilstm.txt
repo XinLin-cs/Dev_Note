@@ -1,0 +1,24 @@
+2021-06-07 20:13:24.133318: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:176] None of the MLIR Optimization Passes are enabled (registered 2)
+Epoch 1/4
+411/411 [==============================] - 32s 29ms/step - loss: 0.3778 - accuracy: 0.8937 - f1_socre: 0.9430 - G_mean: 0.0000e+00 - val_loss: 0.3528 - val_accuracy: 0.8868 - val_f1_socre: 0.9390 - val_G_mean: 0.0000e+00
+Epoch 2/4
+411/411 [==============================] - 10s 25ms/step - loss: 0.3546 - accuracy: 0.8881 - f1_socre: 0.9398 - G_mean: 0.0000e+00 - val_loss: 0.3552 - val_accuracy: 0.8868 - val_f1_socre: 0.9390 - val_G_mean: 0.0000e+00
+Epoch 3/4
+411/411 [==============================] - 11s 26ms/step - loss: 0.3578 - accuracy: 0.8863 - f1_socre: 0.9388 - G_mean: 0.0000e+00 - val_loss: 0.3525 - val_accuracy: 0.8868 - val_f1_socre: 0.9390 - val_G_mean: 0.0000e+00
+Epoch 4/4
+411/411 [==============================] - 10s 25ms/step - loss: 0.3510 - accuracy: 0.8908 - f1_socre: 0.9413 - G_mean: 0.0000e+00 - val_loss: 0.3527 - val_accuracy: 0.8868 - val_f1_socre: 0.9390 - val_G_mean: 0.0000e+00
+loading labeled data ...
+855 train sequences
+367 test sequences
+Pad sequences (samples x time)
+x_train shape: (855, 50)
+x_test shape: (367, 50)
+2nd Train...
+Epoch 1/4
+19/19 [==============================] - 1s 29ms/step - loss: 0.1657 - accuracy: 0.9680 - f1_socre: 0.9835 - G_mean: 0.0000e+00 - val_loss: 0.1894 - val_accuracy: 0.9583 - val_f1_socre: 0.9784 - val_G_mean: 0.0000e+00
+Epoch 2/4
+19/19 [==============================] - 0s 26ms/step - loss: 0.1421 - accuracy: 0.9688 - f1_socre: 0.9839 - G_mean: 0.0000e+00 - val_loss: 0.1952 - val_accuracy: 0.9583 - val_f1_socre: 0.9784 - val_G_mean: 0.0000e+00
+Epoch 3/4
+19/19 [==============================] - 0s 26ms/step - loss: 0.1439 - accuracy: 0.9673 - f1_socre: 0.9831 - G_mean: 0.0000e+00 - val_loss: 0.1936 - val_accuracy: 0.9583 - val_f1_socre: 0.9784 - val_G_mean: 0.0000e+00
+Epoch 4/4
+19/19 [==============================] - 1s 27ms/step - loss: 0.1453 - accuracy: 0.9688 - f1_socre: 0.9840 - G_mean: 0.0000e+00 - val_loss: 0.1926 - val_accuracy: 0.9583 - val_f1_socre: 0.9784 - val_G_mean: 0.0000e+00

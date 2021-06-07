@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import random
 import pandas as pd
 from keras.preprocessing import sequence
 from keras.models import Sequential
@@ -6,6 +7,14 @@ from keras.layers import Dense,Dropout,Embedding,LSTM,Bidirectional
 from keras.datasets import imdb
 from sklearn.model_selection import train_test_split
 from doc_vector import doc_vec
+from F1 import G_mean,f1_socre,specificity,accuracy,recall
+from imblearn.over_sampling import SMOTE
+
+my_metrics=[accuracy,f1_socre,specificity]
+
+
+
+
 
 from settings import file_nolabeled, col_nolabeled, file_labeled, col_labeled
 
@@ -18,7 +27,9 @@ batch_size=32
 
 
 def dealing_data(data_x, data_y, rate):
-    train_x,test_x,train_y,test_y = train_test_split(data_x,data_y,test_size=rate)
+    over_sample=SMOTE(random_state=1234)
+    data_x,data_y=over_sample.fit_sample(data_x,data_y)
+    train_x,test_x,train_y,test_y = train_test_split(data_x,data_y,test_size=rate, random_state=5)
     # 查看数据大小
     print(len(train_x),'train sequences')
     print(len(test_x),'test sequences')
@@ -31,6 +42,7 @@ def dealing_data(data_x, data_y, rate):
     print('x_test shape:', test_x.shape)
     train_y = np.array(train_y)
     test_y = np.array(test_y)
+
     return train_x,test_x,train_y,test_y
 
 
@@ -45,7 +57,7 @@ model.add(Dense(1,activation='sigmoid'))
 
 
 # 编译模型
-model.compile('adam','binary_crossentropy',metrics=['accuracy'])
+model.compile('adam','binary_crossentropy',metrics=my_metrics)
 
 # 加载弱标记数据
 print("loading weak labeled data ...")
@@ -54,7 +66,7 @@ train_x,test_x,train_y,test_y = dealing_data(data_x, data_y, 0.3)
 
 # 第一次训练模型
 print('1st Train...')
-train_history = model.fit(train_x, train_y,batch_size=batch_size,epochs=4,validation_data=[test_x, test_y])
+train_history = model.fit(train_x, train_y,batch_size=batch_size,epochs=4,validation_split=0.3,)
 
 # 加载标记数据
 print("loading labeled data ...")
@@ -63,7 +75,7 @@ train_x,test_x,train_y,test_y = dealing_data(data_x, data_y, 0.3)
 
 # 第二次训练模型
 print('2nd Train...')
-train_history = model.fit(train_x, train_y,batch_size=batch_size,epochs=4,validation_data=[test_x, test_y])
+train_history = model.fit(train_x, train_y,batch_size=batch_size,epochs=4,validation_split=0.3,)
 
 import matplotlib.pyplot as plt
 def show_train_history(train_history,train,validation):
@@ -79,3 +91,5 @@ def show_train_history(train_history,train,validation):
 # print(train_history.history.keys())
 show_train_history(train_history,'accuracy','val_accuracy')  #查看精度变化
 show_train_history(train_history,'loss','val_loss') #查看损失变化
+
+
