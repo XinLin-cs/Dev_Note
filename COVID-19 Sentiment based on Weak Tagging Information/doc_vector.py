@@ -5,8 +5,7 @@ from gensim.models.word2vec import Word2Vec
 from WordVector.sentence_vector import build_sentence_vector
 from WordVector.cut_sentence import cut_sentence_cn
 
-model_address = 'data/w2v_model_50.pkl'
-result_address = 'data/vector_data.csv'
+from settings import model_address, result_address, col_comment
 
 # 将文本数据转换为文本向量
 def doc_vec(file_address, target_name):
@@ -18,14 +17,14 @@ def doc_vec(file_address, target_name):
        #key_words_importance = eval(f.read())
     
     #数据集处理
-    data = data[[target_name,'评论内容']]
+    data = data[[target_name,col_comment]]
     data = data.dropna()
     data[target_name] = data[target_name].apply(lambda x:int(((float(x))/3)))
-    data['评论内容'] = data['评论内容'].apply(lambda x:cut_sentence_cn(x))
+    data[col_comment] = data[col_comment].apply(lambda x:cut_sentence_cn(x))
     data = data.dropna()
     # data = data [data[target_name]!=3]
     data_y = np.array(data[target_name])
-    text_list = np.array(data['评论内容'])
+    text_list = np.array(data[col_comment])
     
     #训练集转换为向量
     data_list=[]

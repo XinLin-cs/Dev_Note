@@ -7,6 +7,7 @@ from keras.datasets import imdb
 from sklearn.model_selection import train_test_split
 from doc_vector import doc_vec
 
+from settings import file_nolabeled, col_nolabeled, file_labeled, col_labeled
 
 # 设置最大特征的数量，对于文本，就是处理的最大单词数量。若被设置为整数，则被限制为待处理数据集中最常见的max_features个单词
 max_features=20000
@@ -48,7 +49,7 @@ model.compile('adam','binary_crossentropy',metrics=['accuracy'])
 
 # 加载弱标记数据
 print("loading weak labeled data ...")
-data_x,data_y = doc_vec('./data/JDComment_data.csv','得分')
+data_x,data_y = doc_vec(file_nolabeled, col_nolabeled)
 train_x,test_x,train_y,test_y = dealing_data(data_x, data_y, 0.3)
 
 # 第一次训练模型
@@ -57,7 +58,7 @@ train_history = model.fit(train_x, train_y,batch_size=batch_size,epochs=4,valida
 
 # 加载标记数据
 print("loading labeled data ...")
-data_x ,data_y = doc_vec('./data/JDComment_data1.csv','score')
+data_x ,data_y = doc_vec(file_labeled, col_labeled)
 train_x,test_x,train_y,test_y = dealing_data(data_x, data_y, 0.3)
 
 # 第二次训练模型

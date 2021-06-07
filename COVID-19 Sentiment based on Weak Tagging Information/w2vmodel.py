@@ -4,9 +4,7 @@ from gensim.models.word2vec import Word2Vec
 from gensim.models.word2vec import Text8Corpus
 from WordVector.cut_sentence import cut_sentence_cn
 
-
-file_address = 'data/JDComment_data.csv'
-model_address = 'data/w2v_model_50.pkl'
+from settings import file_nolabeled, col_nolabeled, col_comment , model_address
 
 
 # 构建word2vec模型，词向量的训练与生成
@@ -22,14 +20,15 @@ def get_dataset_vec(dataset):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv(file_address)
-    df = df[['评论内容','得分']]
+    df = pd.read_csv(file_nolabeled)
+    # print(df)
+    df = df[[col_comment, col_nolabeled]]
 
     cw=lambda x:cut_sentence_cn(x)
 
-    #查看分词结果
-    df['评论内容'].apply(cw).to_csv('temp.csv')
+    # #查看分词结果
+    # df[col_comment].apply(cw).to_csv('./data/temp.csv')
 
-    data = np.array(df['评论内容'].apply(cw))
+    data = np.array(df[col_comment].apply(cw))
 
     get_dataset_vec(data)
