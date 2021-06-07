@@ -43,7 +43,7 @@ def precision(y_true, y_pred):
 def specificity(y_true, y_pred):
     TP, TN, FP, FN = cal_base(y_true, y_pred)
     SP = TN / (TN + FP + K.epsilon())
-    return TN+FP
+    return TN+FN
 
 
 def f1_socre(y_true, y_pred):

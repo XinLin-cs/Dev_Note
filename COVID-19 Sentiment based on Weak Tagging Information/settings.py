@@ -1,4 +1,5 @@
 # 文件索引
+file_oversample = './data/data_oversample.csv'
 file_nolabeled = './data/data_nolabeled.csv'
 file_labeled = './data/data_labeled.csv'
 model_address = 'data/w2v_model_50.pkl'
