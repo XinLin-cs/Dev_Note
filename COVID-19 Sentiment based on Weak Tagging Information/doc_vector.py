@@ -5,12 +5,10 @@ from gensim.models.word2vec import Word2Vec
 from WordVector.sentence_vector import build_sentence_vector
 from WordVector.cut_sentence import cut_sentence_cn
 
-file_address = 'data/JDComment_data.csv'
-model_address = 'data/w2v_model_100.pkl'
-result_address = 'data/vector_data.csv'
+from settings import model_address, result_address, col_comment
 
 # 将文本数据转换为文本向量
-def doc_vec():
+def doc_vec(file_address, target_name):
     data = pd.read_csv(file_address)
     w2v_model = Word2Vec.load(model_address)   #加载训练好的Word2Vec模型
  
@@ -19,15 +17,24 @@ def doc_vec():
        #key_words_importance = eval(f.read())
     
     #数据集处理
-    data_y = np.array(data['得分'].apply(lambda x:((float(x)-1)/4)))
-    text_list = np.array(data['评论内容'].apply(lambda x:cut_sentence_cn(x)))
-
+    data = data[[target_name,col_comment]]
+    data = data.dropna()
+    data[target_name] = data[target_name].apply(lambda x:int(((float(x))/3)))
+    data[col_comment] = data[col_comment].apply(lambda x:cut_sentence_cn(x))
+    
+    data = data.dropna()
+    data = data [data[target_name]!=3]
+    
+    data_y = np.array(data[target_name])
+    text_list = np.array(data[col_comment])
+    
     #训练集转换为向量
     data_list=[]
     for i in range(len(text_list)):
-        data_list.append(str(text_list[i]).split())
+            data_list.append(str(text_list[i]).split())
     
-    data_x=np.concatenate([build_sentence_vector(sen,100,w2v_model) for sen in data_list])
+    
+    data_x=np.concatenate([build_sentence_vector(sen,50,w2v_model) for sen in data_list])
     for i in np.nditer(data_x, op_flags=['readwrite']): 
         for x in np.nditer(i, op_flags=['readwrite']): 
             if x<0:
